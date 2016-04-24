@@ -1,2 +1,2 @@
-source 'https://rubygems.org'
+source 'http://kylozw.github.io'
 gem 'github-pages'
