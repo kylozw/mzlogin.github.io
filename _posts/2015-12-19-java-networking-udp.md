@@ -3,8 +3,10 @@ layout: post
 keywords: java security
 description: Java网络教程：UDP DatagramSocket
 title: Java网络教程：UDP DatagramSocket
-categories: [java]
-tags: [UDP 套接字]
+categories:
+  - java
+tags:
+  - UDP 套接字
 group: archive
 icon: globe
 ---
@@ -27,10 +29,10 @@ UDP非常适合一些并不强调数据包完整的数据传输。比如，网�
 
 通过Java的DatagramSocket发送数据，首先要创建一个DatagramPacket。代码如下：
 
-```
+```java
 byte[] buffer = new byte[65508];
 InetAddress address = InetAddress.getByName("jenkov.com");
-DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 9000);  
+DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 9000);
 ```
 
 byte[]数组buffer就是要在UDP数据报中发送的数据。上面的65508是单个UDP数据包能发送的最大容量。DatagramPacket构造方法中的长度是buffer中的数据的长度，buffer中所有超出最大容量的数据将被丢弃。
@@ -41,19 +43,19 @@ port参数是服务器到接收方的数据监听UDP端口。UDP和TCP端口是�
 
 要发送DatagramPacket，需要创建用于发送数据的DatagramSocket。代码如下：
 
-```
-DatagramSocket datagramSocket = new DatagramSocket();  
+```java
+DatagramSocket datagramSocket = new DatagramSocket();
 ```
 
 发送数据要调用send()方法，如下：
 
-```
-datagramSocket.send(packet);  
+```java
+datagramSocket.send(packet);
 ```
 
 下面是完整实例：
 
-```
+```java
 DatagramSocket datagramSocket = new DatagramSocket();
 
 byte[] buffer = "0123456789".getBytes();
@@ -61,20 +63,20 @@ InetAddress receiverAddress = InetAddress.getLocalHost();
 
 DatagramPacket packet = new DatagramPacket(
 buffer, buffer.length, receiverAddress, 80);
-datagramSocket.send(packet);  
+datagramSocket.send(packet);
 ```
 
 # 通过DatagramSocket接收数据
 
 通过DatagramSocket接收数据，首先要创建一个DatagramPacket，然后通过DatagramSocket's receive()方法写入。代码如下：
 
-```
+```java
 DatagramSocket datagramSocket = new DatagramSocket(80);
 
 byte[] buffer = new byte[10];
 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-datagramSocket.receive(packet);  
+datagramSocket.receive(packet);
 ```
 
 注意DatagramSocket实例化时通过构造方法传入的80。这个参数是DatagramSocket接收UDP数据包的UDP端口。正如之前所说，TCP和UDP端口是不同的，这里就不再赘述了，两个进程分别监听TCP80端口和UDP80端口不会有任何的冲突。
@@ -85,8 +87,8 @@ datagramSocket.receive(packet);
 
 接收到的数据位于DatagramPacket的byte[]数组buffer中，buffer可以通过调用方法来获得：
 
-```
-byte[] buffer = packet.getData();  
+```java
+byte[] buffer = packet.getData();
 ```
 
 接收到的数据有多大，就留给你去探索了。你现在使用的协议应该指明一个UDP数据包传输的数据大小和一个结束标识符。

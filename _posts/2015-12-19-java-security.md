@@ -32,13 +32,13 @@ JCA 和 JCE 只是提供接口，可以进行第三方扩展，通过配置第�
 
 1. 修改 /jdk/jre/lib/security/java.security：
 
-  ```
+  ```java
   security.provider.11 = com.test.Provider
   ```
 
 2. 另外还可以通过 Java 代码中调用 security 类的 addProvider() 方法：
 
-  ```
+  ```java
   Security.addProvider(Provider provider);
   ```
 
@@ -68,7 +68,7 @@ Base64是一种基于64个可打印字符来表示二进制数据的表示方法
 
 - jdk 通过 BASE64Encoder类和 BASE64Decoder 类进行加密和解密：
 
-  ```
+  ```java
         BASE64Encoder encoder = new BASE64Encoder();
         String encode = encoder.encode(src.getBytes());
         System.out.println("encode : " + encode);
@@ -79,7 +79,7 @@ Base64是一种基于64个可打印字符来表示二进制数据的表示方法
 
 - BC 和 CC 都通过自己包中的 Base64 类的静态方法进行加解密：
 
-  ```
+  ```java
     //BC
     byte[] encodeBytes = Base64.encodeBase64(src.getBytes());
     System.out.println("encode : " + new String(encodeBytes));
@@ -127,7 +127,7 @@ MD5 | 128  | jdk
 
 - jdk 通过 MessageDigest 类实现：
 
-  ```
+  ```java
     MessageDigest md = MessageDigest.getInstance("MD5");
     byte[] md5Bytes = md.digest(src.getBytes());
     System.out.println("JDK MD5 : " + Hex.encodeHexString(md5Bytes));
@@ -135,7 +135,7 @@ MD5 | 128  | jdk
 
 - BC 通过 Digest 接口实现：
 
-  ```
+  ```java
     Digest digest = new MD5Digest();
     digest.update(src.getBytes(), 0, src.getBytes().length);
     byte[] md5Bytes = new byte[digest.getDigestSize()];
@@ -145,7 +145,7 @@ MD5 | 128  | jdk
 
 - CC 通过工具类 DigestUtils 实现：
 
-  ```
+  ```java
     System.out.println("CC MD5 : " + DigestUtils.md5Hex(src.getBytes()));
   ```
 
@@ -179,7 +179,7 @@ SHA-512 | 512  | jdk
 
 - jdk 通过 MessageDigest 类实现：
 
-  ```
+  ```java
     MessageDigest md = MessageDigest.getInstance("SHA");
     md.update(src.getBytes());
     System.out.println("jdk sha-1 : " + Hex.encodeHexString(md.digest()));
@@ -187,7 +187,7 @@ SHA-512 | 512  | jdk
 
 - bc 通过 Digest 接口实现：
 
-  ```
+  ```java
     Digest digest = new SHA224Digest();
     digest.update(src.getBytes(), 0, src.getBytes().length);
     byte[] sha224Bytes = new byte[digest.getDigestSize()];
@@ -197,7 +197,7 @@ SHA-512 | 512  | jdk
 
 - CC 通过工具类 DigestUtils 实现：
 
-  ```
+  ```java
     System.out.println("cc sha1 - 1 :" + DigestUtils.sha1Hex(src.getBytes()));
     System.out.println("cc sha1 - 2 :" + DigestUtils.sha1Hex(src));
   ```
@@ -238,7 +238,7 @@ HmacSHA512 | 512  | jdk
 
   1. 通过 KeyGenerator 类：
 
-    ```
+    ```java
     KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacMD5");// 初始化KeyGenerator
     SecretKey secretKey = keyGenerator.generateKey();// 产生密钥
     byte[] key = secretKey.getEncoded();
@@ -246,7 +246,7 @@ HmacSHA512 | 512  | jdk
 
   2. CC 的 Hex.decodeHex() 方法：
 
-    ```
+    ```java
     byte[] key = Hex.decodeHex(new char[] {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'});
     ```
 
@@ -256,7 +256,7 @@ HmacSHA512 | 512  | jdk
 
 - bcHmacMD5 实现，直接使用 HMac 类
 
-  ```
+  ```java
     HMac hmac = new HMac(new MD5Digest());
     hmac.init(new KeyParameter(org.bouncycastle.util.encoders.Hex.decode("aaaaaaaaaa")));
     hmac.update(src.getBytes(), 0, src.getBytes().length);
@@ -282,7 +282,7 @@ HmacSHA512 | 512  | jdk
 
 - Key 由 keyGenerator 类生成：
 
-  ```
+  ```java
     KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
     keyGenerator.init(56);
     SecretKey secretKey = keyGenerator.generateKey();
@@ -291,7 +291,7 @@ HmacSHA512 | 512  | jdk
 
 - 然后通过 SecretKeyFactory 类进行转换：
 
-  ```
+  ```java
     DESKeySpec desKeySpec = new DESKeySpec(bytesKey);
     SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
     Key convertSecretKey = factory.generateSecret(desKeySpec);
@@ -299,7 +299,7 @@ HmacSHA512 | 512  | jdk
 
 - Cipher 类进行加解密：
 
-  ```
+  ```java
     //加密
     Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
     cipher.init(Cipher.ENCRYPT_MODE, convertSecretKey);
@@ -314,7 +314,7 @@ HmacSHA512 | 512  | jdk
 
   注意： IDEA 的 Cipher 实例获取方式略有不同：
 
-  ```
+  ```java
     Cipher cipher = Cipher.getInstance("IDEA/ECB/ISO10126Padding");
   ```
 
@@ -329,14 +329,14 @@ HmacSHA512 | 512  | jdk
 
 - 盐由 SecureRandom 类生成：
 
-  ```
+  ```java
     SecureRandom random = new SecureRandom();
     byte[] salt = random.generateSeed(8);
   ```
 
 - SecretKeyFactory 对象使用 PBEKeySpec 对象作为参数生成密钥
 
-  ```
+  ```java
     String password = "imooc";
     PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray());
     SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWITHMD5andDES");
@@ -345,7 +345,7 @@ HmacSHA512 | 512  | jdk
 
 - Cipher 对象使用 PBEParameterSpec 对象作为参数初始化，然后执行加解密操作
 
-  ```
+  ```java
     //加密
     PBEParameterSpec pbeParameterSpec = new PBEParameterSpec(salt, 100);
     Cipher cipher = Cipher.getInstance("PBEWITHMD5andDES");
@@ -379,7 +379,7 @@ DH算法的实现有以下5步：
 
 - 发送方的 senderKeyPairGenerator 和 senderKeyPair 对象进行初始化发送方密钥 senderPublicKeyEnc：
 
-  ```
+  ```java
     KeyPairGenerator senderKeyPairGenerator = KeyPairGenerator.getInstance("DH");
     senderKeyPairGenerator.initialize(512);
     KeyPair senderKeyPair = senderKeyPairGenerator.generateKeyPair();
@@ -388,7 +388,7 @@ DH算法的实现有以下5步：
 
 - 接收方由接收的公钥 senderPublicKeyEnc 作为参数，receiverKeyFactory 对象生成 receiverPublicKey 对象，receiverPublicKey 对象得到初始化参数 dhParameterSpec 对象，同样通过 receiverKeyPairGenerator 和 receiverKeypair 对象进行初始化接收方密钥 receiverPublicKeyEnc ，同时由 receiverKeypair 对象得到接收方的 receiverPrivateKey 对象：
 
-  ```
+  ```java
     KeyFactory receiverKeyFactory = KeyFactory.getInstance("DH");
     X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(senderPublicKeyEnc);
     PublicKey receiverPublicKey = receiverKeyFactory.generatePublic(x509EncodedKeySpec);
@@ -402,7 +402,7 @@ DH算法的实现有以下5步：
 
 - 接收方 receiverKeyAgreement 对象， 使用 receiverPrivateKey 和 receiverPublicKey 对象构建密钥 receiverDesKey ；发送方由接收的公钥 receiverPublicKeyEnc 作为参数，senderKeyFactory 对象生成 senderPublicKey 对象，senderKeyAgreement 对象使用 senderKeyPair.getPrivate() 和 senderPublicKey 对象构建密钥 senderDesKey 对象。如果 receiverDesKey 对象和 senderDesKey 对象相等，则进入加密阶段。
 
-  ```
+  ```java
     KeyAgreement receiverKeyAgreement = KeyAgreement.getInstance("DH");
     receiverKeyAgreement.init(receiverPrivateKey);
     receiverKeyAgreement.doPhase(receiverPublicKey, true);
@@ -422,7 +422,7 @@ DH算法的实现有以下5步：
 
 - Cipher 进行加解密操作：
 
-  ```
+  ```java
     // 加密
     Cipher cipher = Cipher.getInstance("DES");
     cipher.init(Cipher.ENCRYPT_MODE, senderDesKey);
@@ -447,7 +447,7 @@ RSA 是唯一被广泛接受并实现的非对称算法，它用于数据加密�
 - 初始化密钥<br>
   KeyPairGenerator 和 KeyPair 初始化公钥和私钥，直接通过类型强制转化得到：
 
-  ```
+  ```java
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
     keyPairGenerator.initialize(512);
     KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -459,7 +459,7 @@ RSA 是唯一被广泛接受并实现的非对称算法，它用于数据加密�
 
   私钥加密、公钥解密模式：
 
-  ```
+  ```java
     // 私钥加密、公钥解密——加密
     PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
     KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -481,7 +481,7 @@ RSA 是唯一被广泛接受并实现的非对称算法，它用于数据加密�
 
   公钥加密、私钥解密模式：
 
-  ```
+  ```java
     // 公钥加密、私钥解密——加密
     x509EncodedKeySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
     keyFactory = KeyFactory.getInstance("RSA");
@@ -517,7 +517,7 @@ ElGamal 由 BC 实现，只提供公钥加密算法，其构建密钥对及加�
 
 - AlgorithmParameterGenerator 对象生成参数 AlgorithmParameters 对象，由该参数获得DHParameterSpec对象，然后使用该对象初始化 KeyPairGenerator：
 
-  ```
+  ```java
     AlgorithmParameterGenerator algorithmParameterGenerator = AlgorithmParameterGenerator.getInstance("ElGamal");
     algorithmParameterGenerator.init(256);
     AlgorithmParameters algorithmParameters = algorithmParameterGenerator.generateParameters();
@@ -547,7 +547,7 @@ ElGamal 由 BC 实现，只提供公钥加密算法，其构建密钥对及加�
 
 - 使用 KeyPair 对象构建公钥私钥
 
-  ```
+  ```java
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
     keyPairGenerator.initialize(512);
     KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -557,7 +557,7 @@ ElGamal 由 BC 实现，只提供公钥加密算法，其构建密钥对及加�
 
 - 使用 Signature 对象执行签名和验证签名
 
-  ```
+  ```java
     // 执行签名
     PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
     KeyFactory keyFactory = KeyFactory.getInstance("RSA");
