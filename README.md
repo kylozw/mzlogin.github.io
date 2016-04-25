@@ -1,4 +1,5 @@
-码志
+我的个人博客，基于[码志](https://github.com/mzlogin/mzlogin.github.io)搭建
+下面是码志的 fork 说明
 =================
 
 我的个人博客：<http://mazhuang.org>，外观基于 [DONGChuan](http://dongchuan.github.io) 修改，感谢！
